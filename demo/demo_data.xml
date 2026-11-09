@@ -1,0 +1,30 @@
+<odoo>
+    <!-- Purely fictional demo records. Loaded only when demo data is enabled. -->
+    <record id="demo_customer" model="res.partner">
+        <field name="name">Fictional Client: Sunrise Events</field>
+        <field name="email">example@example.invalid</field>
+        <field name="is_company" eval="True"/>
+    </record>
+    <record id="demo_product_chair" model="product.product">
+        <field name="name">Demo: Folding Chair Rental (1 event)</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="list_price">20.00</field>
+    </record>
+    <record id="demo_product_setup" model="product.product">
+        <field name="name">Demo: Event Setup Crew</field>
+        <field name="type">service</field>
+        <field name="sale_ok" eval="True"/>
+        <field name="list_price">500.00</field>
+    </record>
+    <record id="demo_booking" model="popup.ops.booking">
+        <field name="partner_id" ref="demo_customer"/>
+        <field name="event_name">Fictional Community Market</field>
+        <field name="event_type">market</field>
+        <field name="venue">Demo Community Hall</field>
+        <field name="event_date">2027-02-20 09:00:00</field>
+        <field name="event_end">2027-02-20 17:00:00</field>
+        <field name="guest_count">120</field>
+        <field name="line_ids" eval="[(0, 0, {'product_id': ref('demo_product_chair'), 'quantity': 80.0, 'price_unit': 20.0}), (0, 0, {'product_id': ref('demo_product_setup'), 'quantity': 1.0, 'price_unit': 500.0})]"/>
+    </record>
+</odoo>

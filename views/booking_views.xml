@@ -1,0 +1,127 @@
+<odoo>
+    <record id="view_popup_ops_booking_tree" model="ir.ui.view">
+        <field name="name">popup.ops.booking.tree</field>
+        <field name="model">popup.ops.booking</field>
+        <field name="arch" type="xml">
+            <tree string="Event Bookings" decoration-success="state == 'done'" decoration-muted="state == 'cancel'">
+                <field name="name"/>
+                <field name="event_name"/>
+                <field name="partner_id"/>
+                <field name="event_date"/>
+                <field name="venue"/>
+                <field name="coordinator_id" optional="hide"/>
+                <field name="currency_id" invisible="1"/>
+                <field name="estimated_total" sum="Total"/>
+                <field name="state" widget="badge"
+                       decoration-success="state == 'done'"
+                       decoration-info="state == 'confirmed'"
+                       decoration-warning="state == 'ready'"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_popup_ops_booking_form" model="ir.ui.view">
+        <field name="name">popup.ops.booking.form</field>
+        <field name="model">popup.ops.booking</field>
+        <field name="arch" type="xml">
+            <form string="Event Booking">
+                <header>
+                    <button name="action_confirm" string="Confirm" type="object" class="oe_highlight"
+                            invisible="state != 'draft'"/>
+                    <button name="action_ready" string="Ready for Setup" type="object" class="oe_highlight"
+                            invisible="state != 'confirmed'"/>
+                    <button name="action_complete" string="Complete" type="object" class="oe_highlight"
+                            invisible="state != 'ready'"/>
+                    <button name="action_create_quotation" string="Create Quotation" type="object"
+                            invisible="state not in ('confirmed', 'ready') or sale_order_id"/>
+                    <button name="action_open_quotation" string="Open Quotation" type="object"
+                            invisible="not sale_order_id"/>
+                    <button name="action_cancel" string="Cancel" type="object"
+                            invisible="state in ('done', 'cancel')"/>
+                    <button name="action_reset_draft" string="Reset to Draft" type="object"
+                            invisible="state != 'cancel'"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,confirmed,ready,done"/>
+                </header>
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="name" readonly="1"/>
+                            <field name="event_name"/>
+                            <field name="event_type"/>
+                            <field name="partner_id"/>
+                            <field name="venue"/>
+                        </group>
+                        <group>
+                            <field name="event_date"/>
+                            <field name="event_end"/>
+                            <field name="guest_count"/>
+                            <field name="coordinator_id"/>
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="sale_order_id" readonly="1"/>
+                        </group>
+                    </group>
+                    <notebook>
+                        <page string="Equipment &amp; Services">
+                            <field name="line_ids">
+                                <tree editable="bottom">
+                                    <field name="product_id"/>
+                                    <field name="quantity"/>
+                                    <field name="price_unit"/>
+                                    <field name="currency_id" column_invisible="True"/>
+                                    <field name="subtotal" sum="Total" readonly="1"/>
+                                </tree>
+                            </field>
+                            <group class="oe_subtotal_footer oe_right">
+                                <field name="currency_id" invisible="1"/>
+                                <field name="estimated_total" readonly="1"/>
+                            </group>
+                        </page>
+                        <page string="Internal Notes">
+                            <field name="notes" placeholder="Setup notes, directions, or customer preferences..."/>
+                        </page>
+                    </notebook>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_popup_ops_booking_search" model="ir.ui.view">
+        <field name="name">popup.ops.booking.search</field>
+        <field name="model">popup.ops.booking</field>
+        <field name="arch" type="xml">
+            <search string="Event Bookings">
+                <field name="name"/>
+                <field name="event_name"/>
+                <field name="partner_id"/>
+                <field name="venue"/>
+                <filter name="upcoming" string="Upcoming" domain="[('event_date', '&gt;=', context_today().strftime('%Y-%m-%d 00:00:00'))]"/>
+                <filter name="confirmed" string="Confirmed" domain="[('state','=','confirmed')]"/>
+                <filter name="completed" string="Completed" domain="[('state','=','done')]"/>
+                <group expand="0" string="Group By">
+                    <filter name="by_customer" string="Customer" context="{'group_by':'partner_id'}"/>
+                    <filter name="by_state" string="Status" context="{'group_by':'state'}"/>
+                    <filter name="by_date" string="Event Month" context="{'group_by':'event_date:month'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
+    <record id="action_popup_ops_bookings" model="ir.actions.act_window">
+        <field name="name">Event Bookings</field>
+        <field name="res_model">popup.ops.booking</field>
+        <field name="view_mode">tree,form</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Create your first event booking</p>
+            <p>Link a customer, add equipment and services, then confirm the booking.</p>
+        </field>
+    </record>
+
+    <menuitem id="menu_popup_ops_root" name="PopUpOps" sequence="55" groups="base.group_user"/>
+    <menuitem id="menu_popup_ops_bookings" name="Event Bookings" parent="menu_popup_ops_root"
+              action="action_popup_ops_bookings" sequence="10" groups="base.group_user"/>
+</odoo>

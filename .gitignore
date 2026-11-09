@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# Virtual environments
+.venv/
+venv/
+
+# macOS
+.DS_Store
+
+# VS Code
+.vscode/
+
+# Sensitive files
+.env
+.env.*
+!.env.example
+*.log
+*.sql
+*.dump
+*.backup
+odoo.conf
+
+# Temporary files
+*.tmp
+*.swp
